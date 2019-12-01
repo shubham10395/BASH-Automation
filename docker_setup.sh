@@ -11,9 +11,8 @@ pip install Django==1.11.26
 echo "Enter the name of your project"
 read "project"
 django-admin startproject $project
-sed '28 s/ALLOWED_HOSTS =/ALLOWED_HOSTS = [0.0.0.0:8000]/g' /Django/'$Project'/'$project'/settings.py
-
-
+sed -i "28 s/ALLOWED_HOSTS =/ALLOWED_HOSTS = ['0.0.0.0:8000']/g" /Django/$project/$project/settings.py
+sed -i '28 s/[[]]//g' /Django/$project/$project/settings.py
 
 from="python:3.7"
 echo "FROM $from" > /Django/Dockerfile
@@ -25,7 +24,7 @@ echo "RUN cd /code" >> /Django/Dockerfile
 echo "RUN python3 -m venv project_venv" >> /Django/Dockerfile
 path='./'$project''
 echo "COPY $path /code" >> /Django/Dockerfile
-echo "RUN source project_venv/bin/activate" >> /Django/Dockerfile
+echo "RUN . project_venv/bin/activate" >> /Django/Dockerfile
 echo "Enter Expose port : "
 read port
 echo "EXPOSE $port" >> /Django/Dockerfile
