@@ -1,0 +1,50 @@
+- name: tesing dell command module
+  hosts: bdctest
+  become: true
+  gather_facts: false
+  connection: local
+  vars_prompt:
+   - name: vxlan
+     prompt: Enter the vxlan-vni
+     private: no
+   - name: vlan
+     prompt: Enter the vlan value
+     private: no
+   - name: descri
+     prompt: Enter the desciption for vlan
+     private: no
+   - name: mtu
+     prompt: Enter the MTU value
+     private: no
+   - name: loop
+     prompt: Enter the loopback value
+     private: no
+  tasks:
+   - name: Creating vlan 
+     dellos10_config:
+      lines:
+       - virtual-network {{ vlan }}
+
+   - name: Creation of nve
+     dellos10_config:
+      lines:
+       - source-interface loopback1
+      parents: nve
+
+   - name: VNI creation
+     dellos10_config:
+      lines: 
+       - vxlan-vni {{ vxlan }}
+      parents: virtual-network {{ vlan }}
+
+   - name: vlan creation
+     dellos10_config:
+      lines:
+       - interface vlan {{ vlan }}
+       - description {{ descri }}
+       - mtu {{ mtu }}
+       - virtual-network {{ vlan }}
+       - no shutdown
+       - exit
+      parents: interface vlan {{ vlan }}
+   

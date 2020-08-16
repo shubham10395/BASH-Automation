@@ -1,0 +1,10 @@
+- name: tesing dell command module
+  hosts: all
+  become: true
+  gather_facts: false
+  connection: local
+  tasks:
+   - name: enable netconf service on port 830
+     junos_netconf:
+      listens_on: 830
+      state: present

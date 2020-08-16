@@ -1,0 +1,11 @@
+---
+
+ - name: Bangalore dc to Mumbai dC syncing
+   hosts: bangdc
+   become: yes
+   tasks: 
+   - name: sync /etc/passwd file ...
+     synchronize:
+      src: /etc/passwd
+      dest: /etc/passwd
+     delegate_to: 10.11.1.80

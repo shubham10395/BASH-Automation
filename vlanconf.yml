@@ -1,0 +1,14 @@
+- name: tesing dell command module
+  hosts: bdctest
+  become: true
+  gather_facts: false
+  connection: local
+  tasks:
+   - name: Backup switchs
+     dellos10_config:
+     lines: ['hostname {{ inventory_hostname }}']
+     backup: yes
+     backup_options:
+      filename: backup.cfg
+      dir_path: /home/user
+

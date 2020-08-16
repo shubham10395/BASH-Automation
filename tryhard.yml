@@ -1,0 +1,63 @@
+- name: tesing dell command module
+  hosts: bdctest
+  become: true
+  gather_facts: false
+  connection: local
+  vars: 
+    credentials:
+     username: "{{ansible_user}}"
+     password: "{{ansible_ssh_pass}}"
+
+  vars_prompt:
+   - name: ansible_user
+     prompt: Enter the username
+     private: no
+
+   - name: ansible_password
+     prompt: Enter the password
+     private: yes
+
+   - name: primary
+     prompt: Enter the primary tacacs IP
+     private: no
+   
+   - name: secondary
+     prompt: Enter the secondary tacacs IP
+     private: no
+
+   - name: ntp
+     prompt: Enter the NTP server
+     private: no
+  tasks:
+   - name: Switch Hardning
+     dellos10_config:
+       commands: 
+        - iscsi enable 
+        - iscsi priority-bits 0x10
+        - iscsi target port 860
+        - iscsi target port 3260
+        - iscsi session-monitoring enable
+        - dcbx enable
+        - spanning-tree mode rstp
+        - vrrp version 3
+        - snmp-server community MDCESDSOVM ro
+        - snmp-server community BDCESDSOVM ro
+        - snmp-server contact ESDS-NOC
+        - snmp-server enable traps snmp coldStart
+        - snmp-server enable traps envmon fan
+        - snmp-server enable traps envmon power-supply
+        - snmp-server enable traps envmon temperature
+        - snmp-server host 10.11.1.80 traps version 2c MDCESDSOVM udp-port 161
+        - snmp-server host 10.15.24.31 traps version 2c BDCESDSOVM udp-port 161
+        - logging server 10.11.1.87
+        - logging server 10.15.24.13
+        - write memory
+        - aaa authentication login default group tacacs+ local
+        - aaa authentication login console local
+        - aaa accounting exec default start-stop group tacacs+
+        - aaa accounting commands all default start-stop group tacacs+
+        - tacacs-server host {{ primary }} key supp0rt$ESDS #second or prim
+        - tacacs-server host {{ secondary }} key supp0rt$ESDS
+        - write memory
+        - ntp server {{ ntp }}
+        - write memory

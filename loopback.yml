@@ -1,0 +1,34 @@
+- name: tesing dell command module
+  hosts: testing
+  become: true
+  gather_facts: false
+  connection: local
+  vars_prompt:
+   - name: loopname
+     prompt: Interface loopback name
+     private: no
+   - name: mtu
+     prompt: Enter the mtu value
+     private: no
+   - name: ip
+     prompt: Enter the ip address
+     private: no
+  tasks:
+   - name: Creation of loopback1
+     dellos10_config:
+      lines:
+       - interface loopback {{ loopname }}
+
+   - name: configuration loopback 1
+     dellos10_config:
+      lines:
+       - no shutdown
+       - mtu {{ mtu }}
+       - ip address {{ ip }}
+      parents: interface loopback 1
+
+   - name: Creation of nve
+     dellos10_config:
+      lines:
+       - source-interface loopback 1
+      parents: nve
